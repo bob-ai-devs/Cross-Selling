@@ -6,7 +6,7 @@ import streamlit as st
 
 from core import analytics, ui
 from core.config import (FEATURE_COLS, OPTIONS, PRESETS, PRODUCT_COLS, PRODUCTS, TOP_N)
-from core.inference import predict_single
+from core.inference import predict_single, predict_custom
 from core.preprocessing import InputError, pretty
 
 DEFAULTS = dict(
