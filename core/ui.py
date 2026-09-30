@@ -35,9 +35,9 @@ CSS = f"""
 .hero {{
     background: radial-gradient(
         circle at 15% 50%,
-        {BOB_ORANGE} 0%,
+        {BOB_MAROON} 0%,
         {BOB_ORANGE_DEEP} 45%,
-        {BOB_MAROON} 100%
+        {BOB_ORANGE} 100%
     );
 
     padding: 1.4rem 1.6rem;
