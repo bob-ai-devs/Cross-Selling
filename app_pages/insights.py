@@ -65,28 +65,63 @@ def render():
         else:
             st.plotly_chart(fig, key="ins_cooc")
 
+
     with tabs[4]:
         id_col = r["id_col"]
         label = id_col or "row number"
-        ids = df[id_col].astype(str) if id_col else pd.Series((pd.RangeIndex(len(df)) + 1).astype(str))
-        q = st.text_input(f"Find a customer by {label}", placeholder="type an ID or row number")
-        if q:
-            hit = df[ids.str.strip().str.lower() == q.strip().lower()]
+    
+        ids = (
+            df[id_col].astype(str)
+            if id_col
+            else pd.Series((pd.RangeIndex(len(df)) + 1).astype(str))
+        )
+    
+        # Customer selection dropdown
+        customer_options = ids.astype(str).str.strip().tolist()
+    
+        selected_id = st.selectbox(
+            f"Select a customer by {label}",
+            options=["Select a customer"] + customer_options,
+            index=0,
+            key="selected_customer"
+        )
+    
+        if selected_id != "Select a customer":
+            hit = df[ids.str.strip() == selected_id.strip()]
+    
             if hit.empty:
                 st.warning("No customer with that identifier.")
             else:
                 row = hit.iloc[0]
+    
                 l, rgt = st.columns([3, 2])
-                profile = row[[c for c in df.columns if not c.startswith("Pred_")]]
+    
+                profile = row[
+                    [c for c in df.columns if not c.startswith("Pred_")]
+                ]
+    
                 l.markdown("**Profile and holdings**")
-                l.dataframe(profile.astype(str).rename("Value").to_frame())
+                l.dataframe(
+                    profile.astype(str).rename("Value").to_frame()
+                )
+    
                 rgt.markdown("**Recommendations**")
+    
                 for i in range(1, TOP_N + 1):
-                    prod, aff = row[f"Pred_Target_{i}"], row[f"Pred_Affinity_{i}"]
+                    prod = row[f"Pred_Target_{i}"]
+                    aff = row[f"Pred_Affinity_{i}"]
+    
                     rgt.markdown(f"**{i}. {prod}**")
+    
                     if prod != "—" and pd.notna(aff):
-                        rgt.progress(min(max(float(aff) / 100, 0.0), 1.0),
-                                     text=f"Affinity {aff:.1f} · confidence {row[f'Pred_Confidence_{i}']:.1f}%")
+                        rgt.progress(
+                            min(max(float(aff) / 100, 0.0), 1.0),
+                            text=(
+                                f"Affinity {aff:.1f} · "
+                                f"confidence "
+                                f"{row[f'Pred_Confidence_{i}']:.1f}%"
+                            )
+                        )
 
     with tabs[5]:
         st.markdown("Build a ranked outreach list — highest **priority score** (affinity × confidence) first.")
