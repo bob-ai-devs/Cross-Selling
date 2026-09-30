@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import os
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 import numpy as np
 import pandas as pd
@@ -278,7 +279,8 @@ def train_bundle(df, product_cols, date_cols, drop_cols, params: dict,
         model=model, scaler=scaler, product_enc=pe, cat_encoders=prep["cat_encoders"],
         medians=prep["medians"], attr_cols=prep["attr_cols"], model_cols=model_cols,
         product_cols=list(product_cols), date_cols=list(date_cols), drop_cols=list(drop_cols),
-        dayfirst=dayfirst, trained_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        dayfirst=dayfirst,
+        trained_at=datetime.now(ZoneInfo("Asia/Kolkata")).strftime("%Y-%m-%d %H:%M:%S"),
         n_customers=len(df), n_clusters=k,
     )
     report = dict(
