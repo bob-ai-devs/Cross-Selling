@@ -15,7 +15,7 @@ BOB_ORANGE_DEEP = "#E8531B"  # sun-ray gradient end
 BOB_MAROON = "#8E1B3A"       # sun-ray gradient end / accents
 BOB_NAVY = "#12284C"         # wordmark / headings
 BOB_NAVY_LIGHT = "#1E3E73"
-BOB_CREAM = "#FFF8F1"        # page background
+BOB_CREAM = "#fcfaf7"        # page background
 BOB_GREY = "#5B6675"
 
 
