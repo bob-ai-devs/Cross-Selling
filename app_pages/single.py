@@ -26,110 +26,427 @@ def _apply_preset():
 
 
 def render():
-    ui.hero("Single Customer Recommendation",
-            "Enter one customer's profile to see the three best next products.")
-    art = ui.require_artifacts()
+    ui.hero(
+        "Single Customer Recommendation",
+        "Enter one customer's profile to see the three best next products."
+    )
 
+    ss = st.session_state
+    custom = ss.get("custom_bundle")
+
+    # ---- 1. Model ----------------------------------------------------------
+    st.subheader("1 · Model")
+
+    choices = ["Pre-trained network"] + (
+        ["Custom network (trained this session)"] if custom else []
+    )
+
+    model_choice = st.radio(
+        "Recommendation model",
+        choices,
+        horizontal=True,
+        label_visibility="collapsed"
+    )
+
+    use_custom = model_choice != "Pre-trained network"
+
+    if not custom:
+        st.caption(
+            "Train a custom model on the *Train Custom Model* page "
+            "to unlock the second option."
+        )
+
+    apply_rules = st.toggle(
+        "Apply business rules",
+        value=True,
+        help="Exclude products the customer already holds and avoid duplicates."
+    )
+
+    # ---- 2. Model artifacts ------------------------------------------------
+    # Only require the pre-trained artifacts when the pre-trained model
+    # is actually selected.
+    art = None
+    if not use_custom:
+        art = ui.require_artifacts()
+
+    # ---- 3. Defaults -------------------------------------------------------
     for k, v in DEFAULTS.items():
         st.session_state.setdefault(f"s_{k}", v)
 
+    # ---- 4. Profile --------------------------------------------------------
     top = st.columns([2, 2, 3])
-    top[0].selectbox("Start from a sample profile", list(PRESETS), key="s_preset",
-                     on_change=_apply_preset)
-    apply_rules = top[1].toggle("Apply business rules", value=True, key="s_rules",
-                                help="Exclude products the customer already holds and avoid duplicates.")
+
+    top[0].selectbox(
+        "Start from a sample profile",
+        list(PRESETS),
+        key="s_preset",
+        on_change=_apply_preset
+    )
+
+    # Keep the same session-state key for the business-rule toggle
+    # so existing state continues to work.
+    top[1].toggle(
+        "Apply business rules",
+        value=apply_rules,
+        key="s_rules",
+        help="Exclude products the customer already holds and avoid duplicates."
+    )
+
+    # Use the actual value after the widget has been created.
+    apply_rules = st.session_state["s_rules"]
 
     with st.form("single_form"):
         st.markdown("##### Profile")
-        c = st.columns(3)
-        c[0].number_input("Customer ID", min_value=0, step=1, key="s_CustomerID")
-        c[1].number_input("Age", 18, 70, key="s_Age")
-        c[2].selectbox("Gender", OPTIONS["Gender"], key="s_Gender")
 
         c = st.columns(3)
-        c[0].selectbox("Marital status", OPTIONS["Marital_Status"], key="s_Marital_Status")
-        c[1].selectbox("Employment type", OPTIONS["Employment_Type"], key="s_Employment_Type")
-        c[2].selectbox("Income stability", OPTIONS["Income_Stability"], key="s_Income_Stability")
+        c[0].number_input(
+            "Customer ID",
+            min_value=0,
+            step=1,
+            key="s_CustomerID"
+        )
+        c[1].number_input(
+            "Age",
+            18,
+            70,
+            key="s_Age"
+        )
+        c[2].selectbox(
+            "Gender",
+            OPTIONS["Gender"],
+            key="s_Gender"
+        )
 
         c = st.columns(3)
-        c[0].number_input("Annual income", 0, step=10000, key="s_Annual_Income")
-        c[1].number_input("Liquid assets", 0, step=10000, key="s_Liquid_Assets")
-        c[2].number_input("Investments", 0, step=10000, key="s_Investments")
+        c[0].selectbox(
+            "Marital status",
+            OPTIONS["Marital_Status"],
+            key="s_Marital_Status"
+        )
+        c[1].selectbox(
+            "Employment type",
+            OPTIONS["Employment_Type"],
+            key="s_Employment_Type"
+        )
+        c[2].selectbox(
+            "Income stability",
+            OPTIONS["Income_Stability"],
+            key="s_Income_Stability"
+        )
 
         c = st.columns(3)
-        c[0].number_input("Credit score", 300, 900, key="s_Credit_Score")
-        c[1].number_input("Credit utilization ratio", 0.0, 1.0, step=0.01, key="s_Credit_Utilization_Ratio")
-        c[2].selectbox("Past loan defaults", ["No", "Yes"], key="s_Past_Loan_Defaults")
+        c[0].number_input(
+            "Annual income",
+            0,
+            step=10000,
+            key="s_Annual_Income"
+        )
+        c[1].number_input(
+            "Liquid assets",
+            0,
+            step=10000,
+            key="s_Liquid_Assets"
+        )
+        c[2].number_input(
+            "Investments",
+            0,
+            step=10000,
+            key="s_Investments"
+        )
 
         c = st.columns(3)
-        c[0].selectbox("Property ownership", OPTIONS["Property_Ownership"], key="s_Property_Ownership")
-        c[1].selectbox("Job title", OPTIONS["Job_Title"], key="s_Job_Title")
-        c[2].selectbox("Company size", OPTIONS["Company_Size"], key="s_Company_Size")
-        st.number_input("Years of employment", 0, 40, key="s_Years_of_Employment")
+        c[0].number_input(
+            "Credit score",
+            300,
+            900,
+            key="s_Credit_Score"
+        )
+        c[1].number_input(
+            "Credit utilization ratio",
+            0.0,
+            1.0,
+            step=0.01,
+            key="s_Credit_Utilization_Ratio"
+        )
+        c[2].selectbox(
+            "Past loan defaults",
+            ["No", "Yes"],
+            key="s_Past_Loan_Defaults"
+        )
 
-        st.markdown("##### Products currently held (in the order they were acquired)")
+        c = st.columns(3)
+        c[0].selectbox(
+            "Property ownership",
+            OPTIONS["Property_Ownership"],
+            key="s_Property_Ownership"
+        )
+        c[1].selectbox(
+            "Job title",
+            OPTIONS["Job_Title"],
+            key="s_Job_Title"
+        )
+        c[2].selectbox(
+            "Company size",
+            OPTIONS["Company_Size"],
+            key="s_Company_Size"
+        )
+
+        st.number_input(
+            "Years of employment",
+            0,
+            40,
+            key="s_Years_of_Employment"
+        )
+
+        st.markdown(
+            "##### Products currently held (in the order they were acquired)"
+        )
+
         pc = st.columns(5)
-        for i in range(5):
-            pc[i].selectbox(f"Product {i + 1}", ["None"] + PRODUCTS, format_func=lambda x: "None" if x == "None" else pretty(x),
-                            key=f"s_p{i + 1}")
-        submitted = st.form_submit_button("Get recommendations", type="primary")
 
+        for i in range(5):
+            pc[i].selectbox(
+                f"Product {i + 1}",
+                ["None"] + PRODUCTS,
+                format_func=lambda x: (
+                    "None" if x == "None" else pretty(x)
+                ),
+                key=f"s_p{i + 1}"
+            )
+
+        submitted = st.form_submit_button(
+            "🚀 Get recommendations",
+            type="primary"
+        )
+
+    # ---- 5. Prediction -----------------------------------------------------
     if submitted:
-        ss = st.session_state
-        held = [ss[f"s_p{i}"] for i in range(1, 6)]
-        chosen = [h for h in held if h != "None"]
+        held = [
+            ss[f"s_p{i}"]
+            for i in range(1, 6)
+        ]
+
+        chosen = [
+            h for h in held
+            if h != "None"
+        ]
+
         if len(chosen) != len(set(chosen)):
-            st.warning("The same product is listed more than once — the duplicates are counted as one holding.")
-        values = {c: ss[f"s_{c}"] for c in FEATURE_COLS}
-        values["Past_Loan_Defaults"] = 1 if values["Past_Loan_Defaults"] == "Yes" else 0
+            st.warning(
+                "The same product is listed more than once — "
+                "the duplicates are counted as one holding."
+            )
+
+        values = {
+            c: ss[f"s_{c}"]
+            for c in FEATURE_COLS
+        }
+
+        values["Past_Loan_Defaults"] = (
+            1 if values["Past_Loan_Defaults"] == "Yes" else 0
+        )
+
         for col, h in zip(PRODUCT_COLS, held):
             values[col] = "" if h == "None" else h
+
         try:
-            with st.spinner("Scoring…"):
-                res = predict_single(values, art, apply_rules)
+            with st.spinner(
+                f"Scoring with {model_choice}…"
+            ):
+
+                if use_custom:
+                    # -------------------------------------------------------
+                    # Custom model
+                    # -------------------------------------------------------
+                    #
+                    # Convert the single customer into a one-row DataFrame,
+                    # then use the same custom prediction pipeline as Batch.
+                    #
+                    single_df = pd.DataFrame([values])
+
+                    res = predict_custom(
+                        single_df,
+                        custom,
+                        apply_rules
+                    )
+
+                    label = "Custom network"
+
+                else:
+                    # -------------------------------------------------------
+                    # Pre-trained model
+                    # -------------------------------------------------------
+                    res = predict_single(
+                        values,
+                        art,
+                        apply_rules
+                    )
+
+                    label = "Pre-trained network"
+
         except InputError as e:
             for m in e.messages:
                 st.error(m)
             st.stop()
-        except Exception as e:  # keep the app alive on unexpected model errors
+
+        except Exception as e:
             st.error(f"Prediction failed: {e}")
             st.stop()
-        st.session_state["single_result"] = dict(
-            recs=res.recs.iloc[0].to_dict(), customer_id=ss["s_CustomerID"], values=values,
-            probs=np.mean([res.preds[0][0], res.preds[2][0], res.preds[4][0]], axis=0),
-            classes=[pretty(x) for x in res.product_enc.classes],
-            blank=res.product_enc.blank_index, held=[pretty(h) for h in chosen], rules=apply_rules)
 
+        # ---------------------------------------------------------------
+        # Extract model outputs
+        # ---------------------------------------------------------------
+        #
+        # Both paths should return:
+        #   res.recs
+        #   res.preds
+        #   res.product_enc
+        #
+        # This keeps the output section identical for both models.
+        # ---------------------------------------------------------------
+
+        try:
+            recs = res.recs.iloc[0].to_dict()
+
+            probs = np.mean(
+                [
+                    res.preds[0][0],
+                    res.preds[2][0],
+                    res.preds[4][0]
+                ],
+                axis=0
+            )
+
+            classes = [
+                pretty(x)
+                for x in res.product_enc.classes
+            ]
+
+            blank = res.product_enc.blank_index
+
+        except Exception as e:
+            st.error(
+                f"Could not process the prediction output: {e}"
+            )
+            st.stop()
+
+        ss["single_result"] = dict(
+            recs=recs,
+            customer_id=ss["s_CustomerID"],
+            values=values,
+            probs=probs,
+            classes=classes,
+            blank=blank,
+            held=[pretty(h) for h in chosen],
+            rules=apply_rules,
+            source=label
+        )
+
+    # ---- 6. Results --------------------------------------------------------
     out = st.session_state.get("single_result")
+
     if not out:
         return
 
     st.divider()
-    st.subheader(f"Recommendations for customer {out['customer_id']}")
+    st.subheader(
+        f"Recommendations for customer {out['customer_id']}"
+    )
+
+    st.caption(
+        f"{out['source']} · "
+        f"business rules {'on' if out['rules'] else 'off'}"
+    )
+
+    # ---- Recommendation cards ---------------------------------------------
     cols = st.columns(TOP_N)
+
     for i, col in enumerate(cols, start=1):
+
         prod = out["recs"][f"Pred_Target_{i}"]
         aff = out["recs"][f"Pred_Affinity_{i}"]
         conf = out["recs"][f"Pred_Confidence_{i}"]
+
         with col:
-            st.markdown(f'<div class="rec-card"><div class="rec-rank">Rank {i}</div>'
-                        f'<div class="rec-name">{prod}</div></div>', unsafe_allow_html=True)
+
+            st.markdown(
+                f'<div class="rec-card">'
+                f'<div class="rec-rank">Rank {i}</div>'
+                f'<div class="rec-name">{prod}</div>'
+                f'</div>',
+                unsafe_allow_html=True
+            )
+
             if prod == "—" or pd.isna(aff):
-                st.caption("No further product available under the business rules.")
+                st.caption(
+                    "No further product available "
+                    "under the business rules."
+                )
             else:
-                st.progress(min(max(aff / 100, 0.0), 1.0), text=f"Affinity {aff:.1f} / 100")
-                st.caption(f"Model confidence: {conf:.1f}%")
+                st.progress(
+                    min(max(aff / 100, 0.0), 1.0),
+                    text=f"Affinity {aff:.1f} / 100"
+                )
 
-    keep = [k for k, name in enumerate(out["classes"]) if k != out["blank"]]
-    labels = [out["classes"][k] for k in keep]
-    st.markdown("##### Where the model's interest lies")
-    st.plotly_chart(analytics.fig_probability_bars(np.asarray(out["probs"])[keep], labels, set(out["held"])),
-                    key="single_prob_chart")
-    st.caption("Grey bars are products the customer already holds.")
+                st.caption(
+                    f"Model confidence: {conf:.1f}%"
+                )
 
-    flat = {"CustomerID": out["customer_id"], **out["values"], **out["recs"]}
+    # ---- Probability chart -------------------------------------------------
+    keep = [
+        k
+        for k, name in enumerate(out["classes"])
+        if k != out["blank"]
+    ]
+
+    labels = [
+        out["classes"][k]
+        for k in keep
+    ]
+
+    st.markdown(
+        "##### Where the model's interest lies"
+    )
+
+    st.plotly_chart(
+        analytics.fig_probability_bars(
+            np.asarray(out["probs"])[keep],
+            labels,
+            set(out["held"])
+        ),
+        key="single_prob_chart"
+    )
+
+    st.caption(
+        "Grey bars are products the customer already holds."
+    )
+
+    # ---- Downloads ---------------------------------------------------------
+    flat = {
+        "CustomerID": out["customer_id"],
+        "Model": out["source"],
+        **out["values"],
+        **out["recs"]
+    }
+
     d1, d2, _ = st.columns([1, 1, 3])
-    d1.download_button("⬇️ Download CSV", ui.csv_bytes(pd.DataFrame([flat])),
-                       file_name=f"recommendation_{out['customer_id']}.csv", mime="text/csv")
-    d2.download_button("⬇️ Download JSON", json.dumps(flat, indent=2, default=lambda o: o.item() if hasattr(o, "item") else str(o)),
-                       file_name=f"recommendation_{out['customer_id']}.json", mime="application/json")
+
+    d1.download_button(
+        "⬇️ Download CSV",
+        ui.csv_bytes(pd.DataFrame([flat])),
+        file_name=f"recommendation_{out['customer_id']}.csv",
+        mime="text/csv"
+    )
+
+    d2.download_button(
+        "⬇️ Download JSON",
+        json.dumps(
+            flat,
+            indent=2,
+            default=lambda o: (
+                o.item() if hasattr(o, "item") else str(o)
+            )
+        ),
+        file_name=f"recommendation_{out['customer_id']}.json",
+        mime="application/json"
+    )
