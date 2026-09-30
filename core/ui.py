@@ -6,18 +6,124 @@ import streamlit as st
 from core import storage
 from core.config import ROOT
 
-CSS = """
+
+# ==============================================================================
+# BANK OF BARODA BRAND PALETTE
+# ==============================================================================
+BOB_ORANGE = "#F7941D"       # primary — "Baroda Sun"
+BOB_ORANGE_DEEP = "#E8531B"  # sun-ray gradient end
+BOB_MAROON = "#8E1B3A"       # sun-ray gradient end / accents
+BOB_NAVY = "#12284C"         # wordmark / headings
+BOB_NAVY_LIGHT = "#1E3E73"
+BOB_CREAM = "#FFF8F1"        # page background
+BOB_GREY = "#5B6675"
+
+
+CSS = f"""
 <style>
-.block-container {padding-top: 2.2rem; max-width: 1250px;}
-.hero {padding: 1.4rem 1.6rem; border-radius: 14px; margin-bottom: 1rem;
-       background: linear-gradient(120deg, #2b2d42 0%, #4a4e69 100%); color: #fff;}
-.hero h1 {margin: 0 0 .3rem 0; font-size: 1.9rem; color: #fff;}
-.hero p {margin: 0; opacity: .85;}
-.rec-card {border: 1px solid rgba(128,128,128,.28); border-radius: 12px; padding: 1rem 1.1rem;}
-.rec-rank {font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; opacity: .65;}
-.rec-name {font-size: 1.45rem; font-weight: 700; margin: .1rem 0 .4rem 0;}
-.small-muted {font-size: .82rem; opacity: .7;}
-div[data-testid="stMetric"] {border: 1px solid rgba(128,128,128,.22); border-radius: 10px; padding: .6rem .8rem;}
+
+.block-container {{
+    padding-top: 2.2rem;
+    max-width: 1250px;
+}}
+
+/* =============================================================================
+   BANK OF BARODA HERO
+   The hero is the main page banner — no separate BOB banner is required.
+   ============================================================================= */
+
+.hero {{
+    background: radial-gradient(
+        circle at 15% 50%,
+        {BOB_ORANGE} 0%,
+        {BOB_ORANGE_DEEP} 45%,
+        {BOB_MAROON} 100%
+    );
+
+    padding: 1.4rem 1.6rem;
+    border-radius: 14px;
+    margin-bottom: 1rem;
+
+    color: #FFFFFF;
+
+    box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+}}
+
+.hero h1 {{
+    margin: 0 0 .3rem 0;
+    font-size: 1.9rem;
+    color: #FFFFFF;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+}}
+
+.hero p {{
+    margin: 0;
+    color: #FFEFE0;
+    font-size: .95rem;
+}}
+
+
+/* =============================================================================
+   RECOMMENDATION CARDS
+   ============================================================================= */
+
+.rec-card {{
+    border: 1px solid rgba(128,128,128,.28);
+    border-radius: 12px;
+    padding: 1rem 1.1rem;
+    background-color: #FFFFFF;
+}}
+
+.rec-rank {{
+    font-size: .75rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: {BOB_GREY};
+}}
+
+.rec-name {{
+    font-size: 1.45rem;
+    font-weight: 700;
+    margin: .1rem 0 .4rem 0;
+    color: {BOB_NAVY};
+}}
+
+.small-muted {{
+    font-size: .82rem;
+    color: {BOB_GREY};
+}}
+
+
+/* =============================================================================
+   METRIC CARDS
+   ============================================================================= */
+
+div[data-testid="stMetric"] {{
+    border: 1px solid rgba(128,128,128,.22);
+    border-radius: 10px;
+    padding: .6rem .8rem;
+    background-color: #FFFFFF;
+}}
+
+
+/* =============================================================================
+   PAGE BACKGROUND
+   ============================================================================= */
+
+.stApp {{
+    background-color: {BOB_CREAM};
+}}
+
+
+/* =============================================================================
+   HEADINGS
+   ============================================================================= */
+
+h1, h2, h3 {{
+    color: {BOB_NAVY};
+}}
+
 </style>
 """
 
