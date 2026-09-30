@@ -69,7 +69,7 @@ CSS = f"""
    ============================================================================= */
 
 .rec-card {{
-    border: 1px solid rgba(128,128,128,.28);
+    border: 1.5px solid {BOB_ORANGE};
     border-radius: 12px;
     padding: 1rem 1.1rem;
     background-color: #FFFFFF;
