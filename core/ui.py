@@ -100,7 +100,7 @@ CSS = f"""
    ============================================================================= */
 
 div[data-testid="stMetric"] {{
-    border: 1px solid rgba(128,128,128,.22);
+    border: 1px solid {BOB_ORANGE};
     border-radius: 10px;
     padding: .6rem .8rem;
     background-color: #FFFFFF;
