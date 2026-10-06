@@ -8,6 +8,7 @@ from core.config import (ALIASES, FEATURE_COLS, ID_COL, PRODUCT_COLS, TOP_N)
 from core.demo import make_batch_demo, make_history_demo
 from core.inference import attach, predict_custom, predict_pretrained
 from core.preprocessing import InputError, auto_map, profile_frame
+from app_pages import insights
 
 NONE_OPT = "— none (use row number) —"
 
