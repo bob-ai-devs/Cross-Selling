@@ -25,13 +25,7 @@ navigation = st.navigation({
     "Engine": [
         st.Page(home.render, title="Home", icon="🏠", url_path="home", default=True),
         st.Page(single.render, title="Single Customer", icon="👤", url_path="single"),
-        # st.Page(batch.render, title="Batch Prediction", icon="📂", url_path="batch"),
-        st.Page(
-            lambda: batch.render(insights_page),
-            title="Batch Prediction",
-            icon="📂",
-            url_path="batch"
-        ),
+        st.Page(batch.render, title="Batch Prediction", icon="📂", url_path="batch"),
         st.Page(train.render, title="Train Custom Model", icon="🧪", url_path="train"),
     ],
     "Analytics": [
