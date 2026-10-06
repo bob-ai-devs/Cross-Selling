@@ -175,4 +175,4 @@ def show_results():
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     # d[2].info("Open **Insights Dashboard** in the sidebar for charts, segment analysis and campaign lists.")
     if d[2].button("📊 Insights Dashboard"):
-        st.switch_page("app_pages/insights.py")
+        st.switch_page("insights.py")
