@@ -175,7 +175,7 @@ def show_results():
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     # d[2].info("Open **Insights Dashboard** in the sidebar for charts, segment analysis and campaign lists.")
     d[2].page_link(
-        "app_pages/insights.py",
+        "/insights",
         label="📊 Insights Dashboard",
         icon="📊"
     )
