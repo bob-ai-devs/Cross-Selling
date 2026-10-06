@@ -8,7 +8,7 @@ from core.config import (ALIASES, FEATURE_COLS, ID_COL, PRODUCT_COLS, TOP_N)
 from core.demo import make_batch_demo, make_history_demo
 from core.inference import attach, predict_custom, predict_pretrained
 from core.preprocessing import InputError, auto_map, profile_frame
-from app_pages import insights
+from streamlit_app import insights_page
 
 NONE_OPT = "— none (use row number) —"
 
@@ -175,7 +175,6 @@ def show_results():
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     # d[2].info("Open **Insights Dashboard** in the sidebar for charts, segment analysis and campaign lists.")
     d[2].page_link(
-        "app_pages/insights.py",
-        label="📊 Insights Dashboard",
-        use_container_width=True
+        insights_page,
+        label="📊 Insights Dashboard"
     )
