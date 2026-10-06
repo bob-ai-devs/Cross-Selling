@@ -14,13 +14,6 @@ from core import ui  # noqa: E402
 
 ui.inject_css()
 
-insights_page = st.Page(
-    insights.render,
-    title="Insights Dashboard",
-    icon="📊",
-    url_path="insights"
-)
-
 navigation = st.navigation({
     "Engine": [
         st.Page(home.render, title="Home", icon="🏠", url_path="home", default=True),
@@ -29,8 +22,7 @@ navigation = st.navigation({
         st.Page(train.render, title="Train Custom Model", icon="🧪", url_path="train"),
     ],
     "Analytics": [
-        # st.Page(insights.render, title="Insights Dashboard", icon="📊", url_path="insights"),
-        insights_page,
+        st.Page(insights.render, title="Insights Dashboard", icon="📊", url_path="insights"),
     ],
     "Resources": [
         st.Page(templates.render, title="Templates & Demo Data", icon="🧰", url_path="templates"),
