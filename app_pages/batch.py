@@ -173,8 +173,8 @@ def show_results():
         file_name="cross_sell_results.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     # d[2].info("Open **Insights Dashboard** in the sidebar for charts, segment analysis and campaign lists.")
-    d[2].button(
+    d[2].link_button(
         "📊 Insights Dashboard",
-        use_container_width=True,
-        on_click=lambda: st.switch_page("insights")
+        "/insights",
+        use_container_width=True
     )
