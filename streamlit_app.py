@@ -31,7 +31,7 @@ navigation = st.navigation({
             title="Batch Prediction",
             icon="📂",
             url_path="batch"
-        )
+        ),
         st.Page(train.render, title="Train Custom Model", icon="🧪", url_path="train"),
     ],
     "Analytics": [
